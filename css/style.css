@@ -1,0 +1,39 @@
+body {
+    background-image: url('../img/bg.jpg');
+    background-size: cover;
+    background-position: center center;
+}
+
+h1 {
+    color:white;
+}
+
+#box {
+    width: 330px;
+    margin: 100px auto;
+}
+
+form {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: white;
+}
+
+table {
+    background: white;
+}
+
+.btn-add {
+    margin:10px 0;
+}
+
+#lateral {
+    background: white;
+    padding: 10px;
+    margin-top: 58px;
+}
+
+.margen_sup {
+    margin-top: 58px;
+}
