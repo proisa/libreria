@@ -1,3 +1,6 @@
+<?php
+    require('../inc/datos.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,9 +46,9 @@
                         <div class="form-group">
                             <label for="usuario">Autor</label>
                             <select name="autor" id="" class="form-control">
-                                <option value="1">Pablo Rodriguez</option>
-                                <option value="2">Jose Lopez</option>
-                                <option value="3">Pedro Cruz</option>
+                                <?php foreach ($autores as $key => $value): ?>
+                                    <option value="<?=$value['id']?>"><?=$value['nombre']?></option>
+                                <?php endforeach;?>
                             </select>
                         </div>
                     </div>
@@ -61,9 +64,9 @@
                             <div class="form-group">
                                 <label for="Categoria">Categoria</label>
                                 <select name="categoria" id="Categoria" class="form-control">
-                                    <option value="1">Historia</option>
-                                    <option value="2">Cuentos</option>
-                                    <option value="3">Novelas</option>
+                                <?php foreach ($categorias as $key => $value): ?>
+                                    <option value="<?=$value['id']?>"><?=$value['nombre']?></option>
+                                <?php endforeach;?>
                                 </select>
                             </div>
                         </div>
@@ -81,18 +84,9 @@
                                     <input type="file" name="caratula">
                                 </div>
                             </div>
-
-                            <div class="col-md-6">
-                                <label for="">Estado</label>
-                                <div class="custom-control custom-radio">
-                                        <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input">
-                                        <label class="custom-control-label" for="customRadio1">Disponible</label>
-                                      </div>
-                                      <div class="custom-control custom-radio">
-                                        <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
-                                        <label class="custom-control-label" for="customRadio2">No Disponible</label>
-                                      </div>
-                            </div>
+                        </div>
+                       
+                        <div class="row">
                             <div class="col-md-6">
                                 <label for="">Numero de paginas</label>
                                 <input class="form-control" type="number">     
@@ -120,7 +114,9 @@
                 </div>
             </div>
         </div>
+       
     </div>
     </section>
+    
 </body>
 </html>
