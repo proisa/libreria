@@ -34,7 +34,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8">
-               <form action="listado_libros.html" class="margen_sup" method="post">
+               <form action="listado_libros.php" class="margen_sup" method="post">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">

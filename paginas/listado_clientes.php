@@ -1,10 +1,41 @@
 <?php
 require('../inc/conexion.php');
-$query = $pdo->query("SELECT CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE");
+require('../inc/funciones.php');
+
+if(isset($_POST['accion']) && $_POST['accion'] == 'agregar'){
+    $insert = $pdo->prepare("INSERT INTO CCBDCLIE (CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE) VALUES (:codigo,:nombre,:direccion,:telefono,:zona,:limite)");
+
+    $insert->bindValue(':codigo',$_POST['codigo']);
+    $insert->bindValue(':nombre',$_POST['nombre']);
+    $insert->bindValue(':direccion',$_POST['direccion']);
+    $insert->bindValue(':telefono',$_POST['telefono']);
+    $insert->bindValue(':zona',$_POST['zona']);
+    $insert->bindValue(':limite',$_POST['limite']);
+
+    $insert->execute();
+}
+
+if(isset($_POST['accion']) && $_POST['accion'] == 'editar'){
+    $update = $pdo->prepare("UPDATE CCBDCLIE SET CL_NOMBRE = :nombre,CL_DIREC1 = :direccion,CL_TELEF1 = :telefono,ZO_CODIGO = :zona,CL_LIMCRE = :limite WHERE CL_CODIGO = :codigo");
+
+    $update->bindValue(':nombre',$_POST['nombre']);
+    $update->bindValue(':direccion',$_POST['direccion']);
+    $update->bindValue(':telefono',$_POST['telefono']);
+    $update->bindValue(':zona',$_POST['zona']);
+    $update->bindValue(':limite',$_POST['limite']);
+    $update->bindValue(':codigo',$_POST['codigo']);
+
+    $update->execute();
+
+}
+
+
+
+$query = $pdo->query("SELECT TOP(10) CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE ORDER BY CL_ID DESC ");
 $datos = $query->fetchAll(PDO::FETCH_ASSOC);
 $total_registros = $query->rowCount();
 
-
+print_pre($_POST);
 
 ?>
 
@@ -42,7 +73,7 @@ $total_registros = $query->rowCount();
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <a href="agregar_libro.html" class="btn btn-success btn-add">Agregar nuevo</a>
+                <a href="agregar_cliente.php" class="btn btn-success btn-add">Agregar nuevo</a>
                 <div class="table-responsive">
                 <table class="table">
                     <thead>
@@ -50,6 +81,7 @@ $total_registros = $query->rowCount();
                         <th>Nombre</th>
                         <th>Zona</th>
                         <th style="text-align:right;">Limite de Credito</th>
+                        <th></th>
                     </thead>
                     <tbody>
                         <?php 
@@ -65,6 +97,10 @@ $total_registros = $query->rowCount();
                             <td><?=$value['CL_NOMBRE']?></td>
                             <td><?=$value['ZO_CODIGO']?></td>
                             <td style="text-align:right;"><?=number_format($value['CL_LIMCRE'],2)?></td>
+                            <td>
+                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info">Editar</a>
+                                <a href="listado_clientes.php?accion=eliminar&codigo=<?=$value['CL_CODIGO']?>" class="btn btn-danger">Eliminar</a>
+                            </td>
                         </tr>
                         <?php 
                         $total += $value['CL_LIMCRE'];

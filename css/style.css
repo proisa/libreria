@@ -42,3 +42,7 @@ table {
 .bg-w {
     background: #fff;
 }
+
+#nombre {
+    text-transform: uppercase;
+}

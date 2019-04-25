@@ -6,4 +6,11 @@ function print_pre(array $arr){
     echo '</pre>';   
 }
 
+
+function selected($a,$b){
+    if($a == $b){
+        return 'selected';
+    }
+}
+
 ?>
