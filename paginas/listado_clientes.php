@@ -2,40 +2,92 @@
 require('../inc/conexion.php');
 require('../inc/funciones.php');
 
+require_once '../inc/dompdf/lib/html5lib/Parser.php';
+require_once '../inc/dompdf/lib/php-font-lib/src/FontLib/Autoloader.php';
+require_once '../inc/dompdf/lib/php-svg-lib/src/autoload.php';
+require_once '../inc/dompdf/lib/php-svg-lib/src/autoload.php';
+require_once '../inc/dompdf/src/Autoloader.php';
+Dompdf\Autoloader::register();
+
+// reference the Dompdf namespace
+use Dompdf\Dompdf;
+
+
 if(isset($_POST['accion']) && $_POST['accion'] == 'agregar'){
-    $insert = $pdo->prepare("INSERT INTO CCBDCLIE (CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE) VALUES (:codigo,:nombre,:direccion,:telefono,:zona,:limite)");
-
-    $insert->bindValue(':codigo',$_POST['codigo']);
-    $insert->bindValue(':nombre',$_POST['nombre']);
-    $insert->bindValue(':direccion',$_POST['direccion']);
-    $insert->bindValue(':telefono',$_POST['telefono']);
-    $insert->bindValue(':zona',$_POST['zona']);
-    $insert->bindValue(':limite',$_POST['limite']);
-
-    $insert->execute();
+    try {
+        $pdo->beginTransaction();
+        $insert = $pdo->prepare("INSERT INTO CCBDCLIE (CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE,COD_SUCU) VALUES (:codigo,:nombre,:direccion,:telefono,:zona,:limite,1)");
+        $insert->bindValue(':codigo',$_POST['codigo']);
+        $insert->bindValue(':nombre',$_POST['nombre']);
+        $insert->bindValue(':direccion',$_POST['direccion']);
+        $insert->bindValue(':telefono',$_POST['telefono']);
+        $insert->bindValue(':zona',$_POST['zona']);
+        $insert->bindValue(':limite',$_POST['limite']);
+    
+        $insert->execute();
+        $pdo->commit();
+        
+    }catch(Exception $e){
+        //An exception has occured, which means that one of our database queries
+        //failed.
+        //Print out the error message.
+        echo $e->getMessage();
+        //Rollback the transaction.
+    
+        if($pdo->inTransaction()){
+            $pdo->rollBack();
+        }
+    }
+   
 }
 
 if(isset($_POST['accion']) && $_POST['accion'] == 'editar'){
-    $update = $pdo->prepare("UPDATE CCBDCLIE SET CL_NOMBRE = :nombre,CL_DIREC1 = :direccion,CL_TELEF1 = :telefono,ZO_CODIGO = :zona,CL_LIMCRE = :limite WHERE CL_CODIGO = :codigo");
-
+    $pdo->beginTransaction();
+    $update = $pdo->prepare("UPDATE CCBDCLIE SET CL_NOMBRE = :nombre,CL_DIREC1 = :direccion,CL_TELEF1 = :telefono,ZO_CODIGO = :zona,CL_LIMCRE = :limite WHERE CL_CODIGO = :codigo AND COD_EMPR = 1 AND COD_SUCU = 99345");
     $update->bindValue(':nombre',$_POST['nombre']);
     $update->bindValue(':direccion',$_POST['direccion']);
     $update->bindValue(':telefono',$_POST['telefono']);
     $update->bindValue(':zona',$_POST['zona']);
     $update->bindValue(':limite',$_POST['limite']);
     $update->bindValue(':codigo',$_POST['codigo']);
-
     $update->execute();
 
+    if($update->rowCount() > 0){
+        $pdo->commit();
+    }else{
+        $pdo->rollBack();
+    }
+}
+
+if(isset($_GET['accion']) && $_GET['accion'] == 'eliminar'){
+    $update = $pdo->prepare("UPDATE CCBDCLIE SET CL_ACTIVO = 'D' WHERE CL_CODIGO = :codigo");
+    $update->bindValue(':codigo',$_GET['codigo']);
+    $update->execute();
+    header('Location: listado_clientes.php');
 }
 
 
 
-$query = $pdo->query("SELECT TOP(10) CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE ORDER BY CL_ID DESC ");
+
+$query = $pdo->query("SELECT TOP(20) CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE WHERE CL_ACTIVO <> 'D' AND COD_EMPR = 1 AND COD_SUCU = 1 ORDER BY CL_ID DESC ");
 $datos = $query->fetchAll(PDO::FETCH_ASSOC);
 $total_registros = $query->rowCount();
 
-print_pre($_POST);
+
+// instantiate and use the dompdf class
+$dompdf = new Dompdf();
+
+$content = file_get_contents('http://localhost/libreria/index.php');
+
+$dompdf->loadHtml($content);
+// (Optional) Setup the paper size and orientation
+$dompdf->setPaper('A4', 'landscape');
+// Render the HTML as PDF
+//$dompdf->render();
+// Output the generated PDF to Browser
+//$dompdf->stream();
+
+//print_pre($_POST);
 
 ?>
 
@@ -98,8 +150,8 @@ print_pre($_POST);
                             <td><?=$value['ZO_CODIGO']?></td>
                             <td style="text-align:right;"><?=number_format($value['CL_LIMCRE'],2)?></td>
                             <td>
-                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info">Editar</a>
-                                <a href="listado_clientes.php?accion=eliminar&codigo=<?=$value['CL_CODIGO']?>" class="btn btn-danger">Eliminar</a>
+                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info d-print-none">Editar</a>
+                                <a href="#" class="btn btn-danger eliminar d-print-none" onclick="eliminar('<?=$value['CL_CODIGO']?>');">Eliminar</a>
                             </td>
                         </tr>
                         <?php 
@@ -118,5 +170,13 @@ print_pre($_POST);
         </div>
     </div>
     </section>
+    <script>
+        function eliminar(id){
+            var resp = confirm("Esta seguro de eliminar este cliente?");
+            if(resp == true){
+                window.location = 'listado_clientes.php?accion=eliminar&codigo='+id;
+            }
+        }
+    </script>
 </body>
 </html>
