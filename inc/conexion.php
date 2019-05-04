@@ -1,4 +1,5 @@
 <?php 
+session_start();
 $SERVER_NAME = "dbserver";
 $DATABASE="facfoxsql";
 $DB_USER="sa";

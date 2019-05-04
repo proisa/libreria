@@ -1,9 +1,12 @@
 <?php
-
+require('inc/conexion.php');
 $titulo = 'Sin titulo';
-
 if(isset($_GET['titulo'])){
     $titulo = $_GET['titulo'];
+}
+
+if(isset($_SESSION['login']) && $_SESSION['login'] == true){
+    header('Location: paginas/listado_clientes.php');
 }
 
 ?>
@@ -18,7 +21,7 @@ if(isset($_GET['titulo'])){
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <title>Login | Libreria</title>
     <style>
-        .form-control-custom {
+        /* .form-control-custom {
             border:none;
         }
 
@@ -26,13 +29,11 @@ if(isset($_GET['titulo'])){
             border:none;
         }
 
-
-
         .input_custom {
             border: 2px solid grey;
             padding:10px;
             border-radius:10px;
-        }
+        } */
     </style>
 </head>
 <body>
@@ -43,20 +44,22 @@ if(isset($_GET['titulo'])){
                     <h1 class="text-center">
                         <?=$titulo?>
                     </h1>
-                    <form action="paginas/listado_libros.php" method="post">
+                    <form action="process/AuthProcess.php" method="post">
                         <div class="form-group">
-                            <!-- <label for="usuario">Usuario</label> -->
-                            <div class="input_custom">
-                            <i class="fa fa-user"></i>    
-                            <input type="text" name="usuario" maxlength="15" class="form-control-custom" id="usuario" placeholder="Escriba su usuario">
-                            </div>
-                            
+                            <label for="usuario">Usuario</label>
+                            <input type="text" name="usuario" maxlength="15" class="form-control" id="usuario" placeholder="Escriba su usuario">
                         </div>
                         <div class="form-group">
                             <label for="clave">Clave</label>
                             <input type="password" name="clave" maxlength="20" class="form-control" id="clave" placeholder="Escriba su calve aqui">
                         </div>
                         <button type="submit" id="entrar" class="btn btn-success btn-block">Entrar</button>
+                        <?php if(isset($_GET['auth']) && $_GET['auth'] == 'failed'): ?>
+                        <br>
+                            <div class="alert alert-danger">
+                                Usuario o clave invalida
+                            </div>
+                        <?php endif;?>
                     </form>
                     <a href="paginas/registro.html">Registrarme</a> | <a href="paginas/recuperar_clave.html">Olvide mi clave</a>
                 </div>
@@ -65,20 +68,15 @@ if(isset($_GET['titulo'])){
     </div>
     <script src="js/jquery.js"></script>
     <script src="js/sweetalert.js"></script>
+    <?php if(isset($_GET['auth']) && $_GET['auth'] == 'failed'): ?>
     <script>
-
-        // $("#entrar").click(function(){
-        //     Swal.fire({
-        //     title: 'Listo!',
-        //     text: 'Has dado click',
-        //     type: 'success',
-        //     confirmButtonText: 'Cool'
-        // })
-        // });
-
-       
-
-
+        Swal.fire({
+            title: 'Error!',
+            text: 'Datos invalidos',
+            type: 'error',
+            confirmButtonText: 'Cool'
+        });
     </script>
+    <?php endif;?>
 </body>
 </html>
