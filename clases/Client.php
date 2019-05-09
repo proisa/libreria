@@ -11,7 +11,7 @@ class Client{
     }
 
     public function list(){
-        $query = $this->con->query("SELECT TOP(20) CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE WHERE CL_ACTIVO <> 'D' AND COD_EMPR = 1 AND COD_SUCU = 1 ORDER BY CL_ID DESC ");
+        $query = $this->con->query("SELECT TOP(1000) CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE WHERE CL_ACTIVO <> 'D' AND COD_EMPR = 1 AND COD_SUCU = 1 ORDER BY CL_ID DESC ");
         $datos = $query->fetchAll(PDO::FETCH_ASSOC);
         $total_registros = $query->rowCount();
         return [
