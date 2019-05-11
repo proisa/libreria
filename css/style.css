@@ -46,3 +46,19 @@ table {
 #nombre {
     text-transform: uppercase;
 }
+
+.foto_container {
+    text-align: center;
+    padding: 25px;
+    
+}
+
+.foto_container img {
+    height: 150px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+#foto_cliente {
+    display:none;
+}

@@ -1,13 +1,9 @@
 <?php
-    require('../inc/conexion.php');
-    require('../inc/funciones.php');
+    require('../process/ClientProcess.php');
 
-    $queryCli = $pdo->prepare("SELECT  CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE WHERE CL_CODIGO = :codigo");
-    $queryCli->bindValue(':codigo',$_GET['codigo']);
-    $queryCli->execute();
-    $datosCli = $queryCli->fetch(PDO::FETCH_ASSOC);
+    print_pre($clientes->getClient($_GET['codigo']));
 
-    print_pre($datosCli);
+    $datosCli = $clientes->getClient($_GET['codigo']);
 
     $query = $pdo->query("SELECT ZO_CODIGO,ZO_NOMBRE FROM CCBDZONA");
     $datos = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -47,7 +43,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-               <form action="listado_clientes.php"  method="post" class="margen_sup">
+               <form enctype="multipart/form-data" action="listado_clientes.php"  method="post" class="margen_sup">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
@@ -92,7 +88,24 @@
                         </div>
                     </div>
                     </div>
-                   
+                    <div class="row">
+                        <div class="col-md-6">
+                        <label for="">Nota</label>
+                        <textarea class="form-control" name="detalle" id="" cols="25" rows="5"><?=$datosCli['CL_DETALLE']?></textarea>
+                        </div> 
+                        <div class="col-md-6">
+                            <div class="foto_container">
+                                <?php if(!empty(trim($datosCli['CL_FOTO']))):?>
+                                    <img src="<?=$datosCli['CL_FOTO']?>" alt="">
+                                <?php else:?>
+                                     <img src="../img/sin_foto.png" alt="">
+                                <?php endif;?>
+                            </div>
+                            <input type="file" name="foto_cliente" id="foto_cliente">
+                            <input type="hidden" name="foto_cliente" value="<?=$datosCli['CL_FOTO']?>">
+                        </div> 
+                    </div>
+                   <hr>
                    <button type="submit" class="btn btn-success">
                         Guardar 
                    </button>
@@ -106,6 +119,17 @@
         </div>
     </div>
     </section>
+
+    <script src="../js/jquery.js"></script>
+    <script>
+        $('.foto_container').click(function(){
+           $('#foto_cliente').click();
+        });
+
+        $('#foto_cliente').change( function(event) {
+            $("img").fadeIn("fast").attr('src',URL.createObjectURL(event.target.files[0]));
+        });
+    </script>
     
 </body>
 </html>

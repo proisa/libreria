@@ -1,6 +1,6 @@
 <?php
 
-function print_pre(array $arr){
+function print_pre($arr){
     echo '<pre>';
         print_r($arr);   
     echo '</pre>';   

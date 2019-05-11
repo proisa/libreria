@@ -9,12 +9,12 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-               <form action="../process/ClientProcess.php"  method="post" class="margen_sup">
+               <form enctype="multipart/form-data" action="../process/ClientProcess.php"  method="post" class="margen_sup">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="titulo">Codigo</label>
-                            <input type="text" name="codigo" required="true" maxlength="12" class="form-control" id="titulo" placeholder="Escriba el codigo">
+                            <input type="text" name="codigo"  maxlength="12" class="form-control" id="titulo" placeholder="Escriba el codigo">
                         </div>
                     </div>    
                     <div class="col-md-4">
@@ -34,7 +34,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="titulo">Telefono</label>
-                            <input type="text" name="telefono" maxlength="40" class="form-control" id="titulo" placeholder="Escriba el telefono">
+                            <input type="phone" name="telefono" maxlength="13" class="form-control" id="telefono" placeholder="Escriba el telefono">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -50,11 +50,24 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="titulo">Limite de credito</label>
-                            <input type="text" name="limite" maxlength="40" class="form-control" id="titulo" placeholder="Escriba el limite">
+                            <input type="text" name="limite" maxlength="40" class="form-control" id="limite" placeholder="Escriba el limite">
                         </div>
                     </div>
                     </div>
-                   
+
+                    <div class="row">
+                        <div class="col-md-6">
+                        <label for="">Nota</label>
+                        <textarea class="form-control" name="detalle" id="" cols="25" rows="5"></textarea>
+                        </div> 
+                        <div class="col-md-6">
+                            <div class="foto_container">
+                                <img src="../img/sin_foto.png" alt="">
+                            </div>
+                            <input type="file" name="foto_cliente" id="foto_cliente">
+                        </div> 
+                    </div>
+                   <hr>
                    <button type="submit" class="btn btn-success">
                         Guardar 
                    </button>
@@ -68,6 +81,21 @@
         </div>
     </div>
     </section>
+    <script src="../js/jquery.js"></script>
+    <script src="../js/jquery.mask.min.js"></script>
+    <script>
+
+        $("#telefono").mask('000-000-0000');
+        $("#limite").mask('###,##0.00');
+
+        $('.foto_container').click(function(){
+           $('#foto_cliente').click();
+        });
+
+        $('#foto_cliente').change( function(event) {
+            $("img").fadeIn("fast").attr('src',URL.createObjectURL(event.target.files[0]));
+        });
+    </script>
     
 </body>
 </html>
