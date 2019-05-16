@@ -62,3 +62,9 @@ table {
 #foto_cliente {
     display:none;
 }
+
+.box_container {
+    background: #fff;
+    padding:15px;
+    margin: 10px 0;
+}

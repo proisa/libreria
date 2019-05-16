@@ -138,4 +138,25 @@ class Client{
         }    
     }
 
+    public function grafica($codigo){
+
+        $code = "SET NOCOUNT ON 
+        select cl_codigo as Codigo_Cliente,sum(he_neto) as Monto_Ventas,YEAR(he_fecha) as Anio from IVBDHEPE 
+        where cl_codigo= '".$codigo."'
+        group by CL_CODIGO,YEAR(he_fecha)
+        order by cl_codigo,YEAR(he_fecha)";
+
+        // $query = $this->con->query();
+        //echo $code;
+        $query = $this->con->query($code);
+        $datos = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        if($query->rowCount() != 0){
+            return $datos;   
+        }else{
+            return false;
+        }
+       
+    }
+
 }
