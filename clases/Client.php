@@ -11,7 +11,7 @@ class Client{
     }
 
     public function list(){
-        $query = $this->con->query("SELECT TOP(300) CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE WHERE CL_ACTIVO <> 'D' AND COD_EMPR = 1 AND COD_SUCU = 1 ORDER BY CL_ID DESC ");
+        $query = $this->con->query("SELECT TOP(1000) CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE FROM CCBDCLIE WHERE CL_ACTIVO <> 'D' AND COD_EMPR = 1 AND COD_SUCU = 1 ORDER BY CL_ID DESC ");
         $datos = $query->fetchAll(PDO::FETCH_ASSOC);
         $total_registros = $query->rowCount();
         return [
@@ -40,7 +40,7 @@ class Client{
 
 
     public function getClient($codigo){
-        $queryCli = $this->con->prepare("SELECT CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE,CL_DETALLE,CL_FOTO FROM CCBDCLIE WHERE CL_CODIGO = :codigo");
+        $queryCli = $this->con->prepare("SELECT CL_CODIGO,CL_NOMBRE,CL_DIREC1,CL_TELEF1,ZO_CODIGO,CL_LIMCRE,CL_DETALLE,CL_FOTO,CL_EMAIL FROM CCBDCLIE WHERE CL_CODIGO = :codigo");
         $queryCli->bindValue(':codigo',$codigo);
         $queryCli->execute();
         $datosCli = $queryCli->fetch(PDO::FETCH_ASSOC);
@@ -157,6 +157,21 @@ class Client{
             return false;
         }
        
+    }
+
+    public function estado($codigo){
+        $code = "SET NOCOUNT ON 
+        EXEC FACTURAS_PENDIENTES_CLIENTE '".$codigo."'
+        ";
+        // $query = $this->con->query();
+        //echo $code;
+        $query = $this->con->query($code);
+        $datos = $query->fetchAll(PDO::FETCH_ASSOC);
+        if($query->rowCount() != 0){
+            return $datos;   
+        }else{
+            return false;
+        }
     }
 
 }

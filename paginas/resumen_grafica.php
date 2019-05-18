@@ -8,6 +8,7 @@ require('../header.php');
 
 $codigo = isset($_GET['codigo']) ? $_GET['codigo'] : 0;
 
+
    
 ?>
 
@@ -25,7 +26,25 @@ $codigo = isset($_GET['codigo']) ? $_GET['codigo'] : 0;
                     <?php else:?>
                         <h2>No hay datos</h2>
                     <?php endif;?>
-                    <a href="listado_clientes.php" class="btn btn-info">Regresar</a>
+                    <div class="row">
+
+                        <div class="col-md-2">
+                            <a href="listado_clientes.php" class="btn btn-info ">Regresar</a>
+                        </div>
+
+                        <div class="col-md-4">
+                        <label for="" class="text-primary">Tipo de grafico</label><br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="line" id="line" value="option1">
+                                <label class="form-check-label" for="line">Lineal</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="bar" id="bar" value="option2">
+                                <label class="form-check-label" for="bar">Barra</label>
+                            </div>
+                        </div>
+                    </div>
+                   
                 </div>
                 
             </div>
@@ -39,15 +58,45 @@ $codigo = isset($_GET['codigo']) ? $_GET['codigo'] : 0;
 
 var datos = <?=json_encode($clientes->grafica($codigo));?>
 
-Morris.Line({
-  element: 'grafico',
-  data: datos,
-  xkey: 'Anio',
-  ykeys: ['Monto_Ventas'],
-  labels: ['Ventas']
-}).on('click', function(i, row){
-  console.log(i, row);
+<?php if($_GET['type'] == 'bar'): ?>
+    Morris.Bar({
+    element: 'grafico',
+    data: datos,
+    xkey: 'Anio',
+    ykeys: ['Monto_Ventas'],
+    labels: ['Ventas']
+    }).on('click', function(i, row){
+    console.log(i, row);
+    });
+
+    $('#bar').attr('checked','checked');
+
+<?php else:?>
+    Morris.Line({
+    element: 'grafico',
+    data: datos,
+    xkey: 'Anio',
+    ykeys: ['Monto_Ventas'],
+    labels: ['Ventas']
+    }).on('click', function(i, row){
+    console.log(i, row);
+    });
+
+    $('#line').attr('checked','checked');
+<?php endif;?>
+
+
+
+
+$('#line').click(function(){
+   window.location.href = 'resumen_grafica.php?codigo=<?=$codigo;?>&type=line';
 });
+
+$('#bar').click(function(){
+   window.location.href = 'resumen_grafica.php?codigo=<?=$codigo;?>&type=bar';
+});
+
+
     /*
     new Morris.Line({
   // ID of the element in which to draw the chart.

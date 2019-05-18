@@ -36,9 +36,10 @@ require('../header.php');
                             <td><?=$value['ZO_CODIGO']?></td>
                             <td style="text-align:right;"><?=number_format($value['CL_LIMCRE'],2)?></td>
                             <td>
-                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info d-print-none">Editar</a>
-                                <a href="resumen_grafica.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info d-print-none">Ver Grafica</a>
-                                <a href="#" class="btn btn-danger eliminar d-print-none" onclick="eliminar('<?=$value['CL_CODIGO']?>');">Eliminar</a>
+                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-sm btn-info d-print-none">Editar</a>
+                                <a href="resumen_grafica.php?codigo=<?=$value['CL_CODIGO']?>&type=line" class="btn btn-sm btn-info d-print-none">Ver Grafica</a>
+                                <a href="../process/ClientProcess.php?codigo=<?=$value['CL_CODIGO']?>&accion=enviar_reporte" class="btn btn-sm btn-info d-print-none">Enviar estado</a>
+                                <a href="#" class="btn btn-danger btn-sm eliminar d-print-none" onclick="eliminar('<?=$value['CL_CODIGO']?>');">Eliminar</a>
                             </td>
                         </tr>
                         <?php 
