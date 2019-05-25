@@ -1,7 +1,7 @@
 <?php
     require('../process/ClientProcess.php');
 
-    print_pre($clientes->getClient($_GET['codigo']));
+
 
     $datosCli = $clientes->getClient($_GET['codigo']);
 

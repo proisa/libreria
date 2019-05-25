@@ -36,10 +36,11 @@ require('../header.php');
                             <td><?=$value['ZO_CODIGO']?></td>
                             <td style="text-align:right;"><?=number_format($value['CL_LIMCRE'],2)?></td>
                             <td>
-                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-sm btn-info d-print-none">Editar</a>
-                                <a href="resumen_grafica.php?codigo=<?=$value['CL_CODIGO']?>&type=line" class="btn btn-sm btn-info d-print-none">Ver Grafica</a>
-                                <a href="../process/ClientProcess.php?codigo=<?=$value['CL_CODIGO']?>&accion=enviar_reporte" class="btn btn-sm btn-info d-print-none">Enviar estado</a>
-                                <a href="#" class="btn btn-danger btn-sm eliminar d-print-none" onclick="eliminar('<?=$value['CL_CODIGO']?>');">Eliminar</a>
+                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Editar"><i class="far fa-edit"></i> </a>
+                                <a href="resumen_grafica.php?codigo=<?=$value['CL_CODIGO']?>&type=line" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Ver grafica"> <i class="fas fa-chart-line"></i></a>
+                                <a href="../process/ClientProcess.php?codigo=<?=$value['CL_CODIGO']?>&accion=enviar_reporte" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Enviar estado"><i class="far fa-envelope"></i></a>
+                                <a href="../reportes/estado_cuenta.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Estado de cuenta"><i class="far fa-file-alt"></i></a>
+                                <a href="#" class="btn btn-danger eliminar d-print-none" onclick="eliminar('<?=$value['CL_CODIGO']?>');" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="far fa-trash-alt"></i></a>
                             </td>
                         </tr>
                         <?php 
@@ -74,8 +75,15 @@ require('../header.php');
     </script>
     <script src="../js/jquery.js"></script>
     <script src="../js/sweetalert.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="../js/datatables.min.js"></script>
     <script>
+
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+    });
+
     <?php if(isset($_GET['msg']) && $_GET['msg'] == 'error'): ?>
         Swal.fire({
             title: 'Error!',

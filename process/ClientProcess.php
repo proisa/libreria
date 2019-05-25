@@ -9,9 +9,6 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 
 $clientes = new Client($pdo);
-
-
-
 // Crear
 if(isset($_POST['accion']) && $_POST['accion'] == 'agregar'){
     //print_pre($_POST);
@@ -81,7 +78,7 @@ if(isset($_GET['accion']) && $_GET['accion'] == 'enviar_reporte'){
     $template = str_replace('{{cuerpo}}',$mensaje,$template);
     $template = str_replace('{{balance}}',$balance,$template);
 
-    $reporte_estado_cuenta = file_get_contents(url_base()."/reportes/estado_cuenta.php?codigo={$codigo}",true);
+    $reporte_estado_cuenta = file_get_contents(url_base()."/reportes/estado_cuenta_mail.php?codigo={$codigo}",true);
     // Instantiation and passing `true` enables exceptions
     // PDF
     // reference the Dompdf namespace
