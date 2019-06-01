@@ -9,8 +9,12 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../js/datatables.min.css"/>
     <link rel="stylesheet" type="text/css" href="../css/morris.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-datepicker.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-datepicker3.standalone.min.css"/>
     
-    <title>Listado de clientes</title>
+    <title>
+        <?= $titulo = isset($titulo) ? $titulo : 'Titulo' ?>
+    </title>
 </head>
 <body>
 <header>

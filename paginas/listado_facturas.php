@@ -4,69 +4,116 @@ require('../process/InvoiceProcess.php');
 if($_SESSION['login'] !== true){
     header('Location: ../index.php');
 }
+
+$titulo = 'Listado de facturas';
 require('../header.php');
 
 //print_pre($invoice->list(1));
 
 $pagina = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
+
+$desde = isset($_GET['desde']) ? $_GET['desde'] : date('d/m/Y');
+$hasta = isset($_GET['hasta']) ? $_GET['hasta'] : date('d/m/Y');
+
+$datos = $invoice->list($pagina,$desde,$hasta);
+
+$muestra_actual = $datos['muestra']*$pagina;
+
+if($pagina >= $datos['total_paginas']){
+    $muestra_actual = $datos['total_registros'];
+}
+
+$filtro = '';
+
+if(isset($_GET['desde']) && isset($_GET['hasta'])){
+    $filtro = '&desde='.$_GET['desde'].'&hasta='.$_GET['hasta'];
+}
+
 ?>
 
 <section>
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <a href="agregar_cliente.php" class="btn btn-success btn-add">Agregar nuevo</a>
+               
+            </div>
+            <div class="col-md-12">
                 <div class="table-responsive bg-w p-3">
-                <div class="blue-line"></div>    
-                <table class="table" id="myTable">
+                    <div class="row">
+                        <div class="col-md-2">
+                        <label for="">Desde</label>
+                            <div class="input-group">
+                                <input type="text" id="desde" class="form-control date" value="<?=$desde?>">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="">Hasta</label>
+                            <div class="input-group">
+                                <input type="text" id="hasta" class="form-control date" value="<?=$hasta?>">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <a href="#" onclick="filtro()" class="btn btn-info" style="margin-top:32px;"> Filtrar <i class="fas fa-search"></i></a>
+                        </div>
+                    </div>
+               <hr>
+                <table class="table" id="invoices">
                     <thead>
-                        <th>Codigo</th>
-                        <th>Nombre</th>
-                        <th>Zona</th>
-                        <th style="text-align:right;">Limite de Credito</th>
-                        <th></th>
+                        <th>Fecha</th>
+                        <th>No. Factura</th>
+                        <th>Cliente</th>
+                        <th>RNC</th>
+                        <th>Monto bruto</th>
+                        <th>Descuento</th>
+                        <th>Sub Total</th>
+                        <th>Itbis</th>
+                        <th>% Ley</th>
+                        <th>Monto Neto</th>
                     </thead>
                     <tbody>
-                        <?php 
-                        $total = 0;                       
-                        foreach ($invoice->list($pagina)['datos'] as $key => $value): ?>
-                        <?php 
-                        $color = '#000';
-                        if($value['CL_LIMCRE'] <= 200000){
-                            $color = 'red';
-                        } ?>
+                        <?php                  
+                        foreach ($datos['datos'] as $key => $value): ?>
                         <tr style="color:<?=$color?>">
-                            <td><?=$value['CL_CODIGO']?></td>
-                            <td><?=$value['CL_NOMBRE']?></td>
-                            <td><?=$value['ZO_CODIGO']?></td>
-                            <td style="text-align:right;"><?=number_format($value['CL_LIMCRE'],2)?></td>
-                            <td>
-                                <a href="editar_cliente.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Editar"><i class="far fa-edit"></i> </a>
-                                <a href="resumen_grafica.php?codigo=<?=$value['CL_CODIGO']?>&type=line" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Ver grafica"> <i class="fas fa-chart-line"></i></a>
-                                <a href="../process/ClientProcess.php?codigo=<?=$value['CL_CODIGO']?>&accion=enviar_reporte" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Enviar estado"><i class="far fa-envelope"></i></a>
-                                <a href="../reportes/estado_cuenta.php?codigo=<?=$value['CL_CODIGO']?>" class="btn btn-info d-print-none" data-toggle="tooltip" data-placement="top" title="Estado de cuenta"><i class="far fa-file-alt"></i></a>
-                                <a href="#" class="btn btn-danger eliminar d-print-none" onclick="eliminar('<?=$value['CL_CODIGO']?>');" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="far fa-trash-alt"></i></a>
-                            </td>
+                            <td><?=$value['FECHA']?></td>
+                            <td><?=$value['NRO_FACTURA']?></td>
+                            <td><?=$value['CLIENTE']?>/<?=$value['NOMBRE']?></td>
+                            <td><?=$value['RNC']?></td>
+                            <td style="text-align:right;"><?=number_format($value['MONTO_BRUTO'],2)?></td>
+                            <td style="text-align:right;"><?=number_format($value['DESCUENTO'],2)?></td>
+                            <td style="text-align:right;"><?=number_format($value['SUB_TOTAL'],2)?></td>
+                            <td style="text-align:right;"><?=number_format($value['ITBIS'],2)?></td>
+                            <td style="text-align:right;"><?=number_format($value['PORCIENTO_DE_LEY'],2)?></td>
+                            <td style="text-align:right;"><?=number_format($value['VALOR_NETO'],2)?></td>
                         </tr>
                         <?php 
-                        $total += $value['CL_LIMCRE'];
                         endforeach; ?>
                     </tbody>
-                
-                    <tfoot>
-                        <tr>
-                            <th colspan="4" style="text-align:right">Total:</th>
-                            <th></th>
-                        </tr>
-                    </tfoot>
                 </table>
+                <hr>
+                Mostrando <?=number_format($muestra_actual)?> de <?=number_format($datos['total_registros'],0)?>
                 <nav aria-label="...">
                     <ul class="pagination">
-                        <?php for($i=1;$i<=10;$i++):?>
+                        <?php if($pagina > 1): ?>    
                         <li class="page-item">
-                            <a class="page-link" href="listado_facturas.php?pagina=<?=$i?>" tabindex="-1" aria-disabled="true"><?=$i?></a>
+                            <a class="page-link" href="listado_facturas.php?pagina=<?=$pagina-1?><?=$filtro?>" tabindex="-1">Mostrar menos</a>
                         </li>
-                        <?php endfor;?>
+                        <?php endif;?>
+                        <?php if($pagina < $datos['total_paginas']): ?>    
+                            <li class="page-item">
+                                <a class="page-link" href="listado_facturas.php?pagina=<?=$pagina+1?><?=$filtro?>" tabindex="1" >Mostrar mas</a>
+                            </li>
+                        <?php endif;?>
                     </ul>
                 </nav>
             </div>
@@ -74,3 +121,63 @@ $pagina = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
         </div>
     </div>
     </section>
+
+    <script src="../js/jquery.js"></script>
+    <script src="../js/sweetalert.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="../js/datatables.min.js"></script>
+    <script type="text/javascript" src="../js/datepicker.min.js"></script>
+
+    <script>
+    $(document).ready( function () {
+    $('#invoices').DataTable({
+        "language": {
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningun dato disponible en esta tabla",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sSearch": "Buscar:",
+            "sUrl": "",
+            "sInfoThousands": ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+            "sFirst": "Primero",
+            "sLast": "Ãšltimo",
+            "sNext": "Siguiente",
+            "sPrevious": "Anterior"
+        },
+            "oAria": {
+            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        "lengthChange": true,
+        "pageLength": 25,
+        "dom": '<"top"Bfrtip<"clear">>rt<"bottom"ilp<"clear">>',
+            buttons: [
+               'excel', 'pdf', 'print'
+            ],
+        });
+
+
+        $('.date').datepicker({
+            format: 'dd/mm/yyyy',
+        });
+    });
+
+    function filtro(){
+        var desde = $('#desde').val();
+        var hasta = $('#hasta').val();
+        window.location = window.location.pathname+'?pagina=<?=$pagina?>'+'&desde='+desde+'&hasta='+hasta;
+    }
+
+
+    </script>
+
+    </body>
+</html>
