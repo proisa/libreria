@@ -31,15 +31,28 @@ if(isset($_GET['desde']) && isset($_GET['hasta'])){
 
 ?>
 
+<style>
+   @media print {
+       .total { 
+           display: inherit;
+       }
+
+       .total > .wc {
+           color:#ffffff;
+       }
+   }
+</style>
+
 <section>
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-               
+             
             </div>
             <div class="col-md-12">
                 <div class="table-responsive bg-w p-3">
                     <div class="row">
+                        <!-- Form -->
                         <div class="col-md-2">
                         <label for="">Desde</label>
                             <div class="input-group">
@@ -66,6 +79,7 @@ if(isset($_GET['desde']) && isset($_GET['hasta'])){
                         <div class="col-md-3">
                             <a href="#" onclick="filtro()" class="btn btn-info" style="margin-top:32px;"> Filtrar <i class="fas fa-search"></i></a>
                         </div>
+                        <!-- End form -->
                     </div>
                <hr>
                 <table class="table" id="invoices">
@@ -83,6 +97,7 @@ if(isset($_GET['desde']) && isset($_GET['hasta'])){
                     </thead>
                     <tbody>
                         <?php                  
+                        $total = 0;
                         foreach ($datos['datos'] as $key => $value): ?>
                         <tr style="color:<?=$color?>">
                             <td><?=$value['FECHA']?></td>
@@ -97,7 +112,20 @@ if(isset($_GET['desde']) && isset($_GET['hasta'])){
                             <td style="text-align:right;"><?=number_format($value['VALOR_NETO'],2)?></td>
                         </tr>
                         <?php 
+                        $total += $value['VALOR_NETO'];
                         endforeach; ?>
+                        <tr class='total' style="display:none">
+                            <td style='color:#ffffff;' class="wc">ZZZZZZ</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Total: <?=$total?></td>
+                        </tr>
                     </tbody>
                 </table>
                 <hr>
@@ -131,6 +159,18 @@ if(isset($_GET['desde']) && isset($_GET['hasta'])){
 
     <script>
     $(document).ready( function () {
+
+        function formatMoney(n, c, d, t) {
+        var c = isNaN(c = Math.abs(c)) ? 2 : c,
+            d = d == undefined ? "." : d,
+            t = t == undefined ? "," : t,
+            s = n < 0 ? "-" : "",
+            i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+            j = (j = i.length) > 3 ? j % 3 : 0;
+
+        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+        };    
+
     $('#invoices').DataTable({
         "language": {
             "sProcessing": "Procesando...",
@@ -160,8 +200,59 @@ if(isset($_GET['desde']) && isset($_GET['hasta'])){
         "pageLength": 25,
         "dom": '<"top"Bfrtip<"clear">>rt<"bottom"ilp<"clear">>',
             buttons: [
-               'excel', 'pdf', 'print'
+               'excel', 'pdf', 
+                { 
+                    extend: 'print',
+                    title: '<h2>Proisa</h2>\
+                    <p>Av. Estrella Sadhala, Plaza Milton, mod. 101 | 809-581-9644</p><hr>\
+                    <h3 class="text-center">Listado de facturas</h3>',
+                    message: '<p class="text-center">Desde: <?=$desde?> -  Hasta: <?=$hasta?></p>',
+                    customize: function ( win ) {
+                        $(win.document.body)
+                            .css( 'font-size', '16px' )
+                            .prepend(
+                                ''
+                            );
+    
+                        $(win.document.body).find( 'table' )
+                            .addClass( 'compact' )
+                            .css( 'font-size', 'inherit' );
+                    },
+                    footer: true 
+                }
             ],
+            // "footerCallback": function ( row, data, start, end, display ) {
+            //     var api = this.api(), data;
+    
+            //     // Remove the formatting to get integer data for summation
+            //     var intVal = function ( i ) {
+            //         return typeof i === 'string' ?
+            //             i.replace(/[\$,]/g, '')*1 :
+            //             typeof i === 'number' ?
+            //                 i : 0;
+            //     };
+    
+            //     // Total over all pages
+            //     total = api
+            //         .column( 3 )
+            //         .data()
+            //         .reduce( function (a, b) {
+            //             return intVal(a) + intVal(b);
+            //         }, 0 );
+    
+            //     // Total over this page
+            //     pageTotal = api
+            //         .column( 3, { page: 'current'} )
+            //         .data()
+            //         .reduce( function (a, b) {
+            //             return intVal(a) + intVal(b);
+            //         }, 0 );
+    
+            //     // Update footer
+            //     $( api.column( 3 ).footer() ).html(
+            //         'Total pagina '+formatMoney(pageTotal) +' ('+ formatMoney(total) +' Total general)'
+            //     );
+            // }
         });
 
 
